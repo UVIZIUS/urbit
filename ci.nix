@@ -41,10 +41,13 @@ let
     crossSystem = native.lib.systems.examples.musl64;
   };
 
-  release = import ./default.nix { pkgs = musl64; };
+  shared = import ./default.nix { pkgs = native; };
+  static = import ./default.nix { pkgs = musl64; };
 
 in
 
-release // {
+static // {
+  inherit (shared) herb;
+
   haskell = haskellPackages musl64;
 }
