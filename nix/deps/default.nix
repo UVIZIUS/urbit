@@ -7,6 +7,7 @@ rec {
   ed25519      = import ./ed25519      { inherit pkgs; };
   scrypt       = import ./scrypt       { inherit pkgs; };
   softfloat3   = import ./softfloat3   { inherit pkgs; };
+  libsigsegv   = import ./libsigsegv   { inherit pkgs; };
   secp256k1    = import ./secp256k1    { inherit pkgs; };
   h2o          = import ./h2o          { inherit pkgs uv; };
   pills        = import ./pills        { inherit pkgs; };
