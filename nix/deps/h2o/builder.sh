@@ -85,6 +85,7 @@ sources=" \
 CFLAGS=" \
   -O3 \
   -Wall -Wno-unused-value -Wno-unused-function \
+  -D_GNU_SOURCE \
   -I$src/include \
   -I$src/deps/cloexec \
   -I$src/deps/brotli/enc \
