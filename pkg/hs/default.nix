@@ -20,7 +20,7 @@ let
 
     modules = [{ 
       # This corresponds to the set of packages (boot libs) that ship with GHC.
-      # We declare them here to ensure any dependency gets them from GHC iteself
+      # We declare them here to ensure any dependency gets them from GHC itself
       # rather than trying to re-install them into the package database.
       nonReinstallablePkgs = [
         "Cabal"

@@ -1,7 +1,7 @@
 { pkgs }:
 
 {
-  brass = pkgs.fetchlfs { src = ../../../bin/brass.pill; };
-  ivory = pkgs.fetchlfs { src = ../../../bin/ivory.pill; };
-  solid = pkgs.fetchlfs { src = ../../../bin/solid.pill; };
+  brass = pkgs.fetch-github-lfs { src = ../../../bin/brass.pill; };
+  ivory = pkgs.fetch-github-lfs { src = ../../../bin/ivory.pill; };
+  solid = pkgs.fetch-github-lfs { src = ../../../bin/solid.pill; };
 }
