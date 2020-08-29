@@ -57,18 +57,9 @@ let
     inherit name meta;
 
     src = ../../../pkg/urbit;
+    builder = ./builder.sh;
 
     buildInputs = deps ++ vendor;
-
-    # FIXME: (brendan): Why is -j8 hardcoded - causes problems on CI agents.
-    installPhase = ''
-      make all -j8
-      make test
-
-      mkdir -p $out/bin
-      cp ./build/urbit $out/bin/${name}
-      cp ./build/urbit-worker $out/bin/${name}-worker
-    '';
 
     # See https://github.com/NixOS/nixpkgs/issues/18995
     hardeningDisable = if debug then [ "all" ] else [];

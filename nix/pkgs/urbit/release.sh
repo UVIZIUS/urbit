@@ -17,5 +17,5 @@ bash ./configure
 make build/urbit build/urbit-worker -j8
 
 mkdir -p $out/bin
-cp ./build/urbit              $out/bin/$exename
-cp ./build/urbit-worker       $out/bin/$exename-worker
+cp ./build/urbit        $out/bin/$exename
+cp ./build/urbit-worker $out/bin/$exename-worker
