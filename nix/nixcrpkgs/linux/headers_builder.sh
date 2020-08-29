@@ -4,6 +4,8 @@ shopt -u nullglob
 tar -xf $src
 mv linux-$version linux
 
+sed -i 's,/bin/pwd,pwd,' linux/Makefile
+
 mkdir -p obj/staged
 make -C linux headers_install \
   ARCH=$linux_arch \
