@@ -47,17 +47,12 @@ let
 
   package = native.stdenvNoCC.mkDerivation rec {
     name = "release-package";
-    src = builtins.path { name = "git"; path = ./.git; };
-    nativeBuildInputs = [ native.coreutils native.gzip native.gnutar native.git ];
+    nativeBuildInputs = [ native.coreutils native.gzip native.gnutar ];
     phases = [ "installPhase" ];
     installPhase = ''
     set -x
 
     mkdir $out
-
-    pushd $src >/dev/null
-    git rev-parse HEAD > $out/rev
-    popd >/dev/null
 
     tar vczf $out/release.tar.gz \
       --owner=0 --group=0 --mode=u+rw,uga+r \
@@ -77,16 +72,18 @@ let
     preferLocalBuild = true;
   };
 
+  md5 = builtins.readFile "${package}/md5";
+
 in static // {
   inherit (shared) herb;
   inherit haskell;
-  inherit package;
   
   release = native.push-gcp-object {
+    inherit md5;
+
     src = "${package}/release.tar.gz";
-    md5 = builtins.readFile "${package}/md5";
     bucket = "tlon-us-terraform";
-    object = "releases/" + builtins.readFile "${package}/rev" + ".tar.gz";
+    object = "releases/${md5}.tar.gz";
     serviceAccountKey = builtins.readFile("/var/run/keys/service-account.json");
   };
 }
