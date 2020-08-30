@@ -43,11 +43,50 @@ let
 
   shared = import ./default.nix { pkgs = native; };
   static = import ./default.nix { pkgs = musl64; };
-
-in
-
-static // {
-  inherit (shared) herb;
-
   haskell = haskellPackages musl64;
+
+  package = native.stdenvNoCC.mkDerivation rec {
+    name = "release-package";
+    src = builtins.path { name = "git"; path = ./.git; };
+    nativeBuildInputs = [ native.coreutils native.gzip native.gnutar native.git ];
+    phases = [ "installPhase" ];
+    installPhase = ''
+    set -x
+
+    mkdir $out
+
+    pushd $src >/dev/null
+    git rev-parse HEAD > $out/rev
+    popd >/dev/null
+
+    tar vczf $out/release.tar.gz \
+      --owner=0 --group=0 --mode=u+rw,uga+r \
+      --absolute-names \
+      --hard-dereference \
+      --transform "s,${haskell.exes.urbit-king.urbit-king}/bin/,," \
+      --transform "s,''${static.urbit}/bin/,," \
+      ${haskell.exes.urbit-king.urbit-king}/bin/urbit-king \
+      ${static.urbit}/bin/urbit \
+      ${static.urbit}/bin/urbit-worker
+
+    # Write the md5sum output to a file as using `builtins.hashFile`
+    # would cause unreliable interaction with `push-gcp-object`.
+    md5sum $out/release.tar.gz | awk '{printf $1}' > $out/md5
+  '';
+
+    preferLocalBuild = true;
+  };
+
+in static // {
+  inherit (shared) herb;
+  inherit haskell;
+  inherit package;
+  
+  release = native.push-gcp-object {
+    src = "${package}/release.tar.gz";
+    md5 = builtins.readFile "${package}/md5";
+    bucket = "tlon-us-terraform";
+    object = "releases/" + builtins.readFile "${package}/rev" + ".tar.gz";
+    serviceAccountKey = builtins.readFile("/var/run/keys/service-account.json");
+  };
 }

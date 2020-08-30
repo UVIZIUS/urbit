@@ -14,4 +14,5 @@ in pkgs // {
   inherit sources;
 
   fetch-github-lfs = import ./lib/fetch-github-lfs.nix { inherit pkgs; };
+  push-gcp-object = import ./lib/push-gcp-object.nix { inherit pkgs; };
 }

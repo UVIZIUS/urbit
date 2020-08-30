@@ -1,7 +1,13 @@
 { pkgs }:
 
-{ src, name ? baseNameOf src, owner ? "urbit", repo ? "urbit"
-, preferLocalBuild ? true }:
+{ src
+  # `name` shouldn't use `baseNameOf` otherwise we'll
+  # get `is not allowed to refer to a store path` errors.
+, name ? baseNameOf src
+, owner ? "urbit"
+, repo ? "urbit"
+, preferLocalBuild ? true
+}:
 
 assert builtins.isPath src;
 
@@ -46,8 +52,7 @@ let
   # Encode `oid` and `size` into a download operation per:
   # https://github.com/git-lfs/git-lfs/blob/master/docs/api/batch.md
   #
-  # This is done using toJSON to avoid bash quotation issues.
-
+  # This is done using toJSON to avoid bash quotation issuthe configurationes.
   downloadPayload = builtins.toJSON {
     operation = "download";
     objects = [ pointer ];
@@ -56,8 +61,9 @@ let
   # Define a fixed-output derivation using the lfs pointer's `oid` as the
   # expected sha256 output hash, if `oid` is not null.
   #
-  # - 1. Request the actual url of the binary file from the lfs batch api.
-  # - 2. Download the binary file contents to `$out`.
+
+  # 1. Request the actual url of the binary file from the lfs batch api.
+  # 2. Download the binary file contents to `$out`.
   download = pkgs.stdenvNoCC.mkDerivation {
     name = "lfs-blob-${name}";
     nativeBuildInputs = [ pkgs.curl pkgs.jq ];
@@ -99,6 +105,6 @@ let
     inherit preferLocalBuild;
   };
 
-  # If `pointer.oid` is null then supplied the `src` must be a binary
-  # blob and can be returned directly.
+# If `pointer.oid` is null then supplied the `src` must be a binary
+# blob and can be returned directly.
 in if pointer.oid == null || pointer.size == null then src else download
