@@ -10,5 +10,5 @@ make all -j8
 make test
 
 mkdir -p $out/bin
-cp ./build/urbit        $out/bin/$name
-cp ./build/urbit-worker $out/bin/$name-worker
+cp ./build/urbit        $out/bin/$exename
+cp ./build/urbit-worker $out/bin/$exename-worker

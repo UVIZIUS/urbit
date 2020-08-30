@@ -23,7 +23,7 @@ in pkgs.stdenvNoCC.mkDerivation {
   nativeBuildInputs = [ pkgs.coreutils pkgs.xxd pkgs.google-cloud-sdk ];
   phases = [ "installPhase" ];
   installPhase = ''
-    set -xeuo pipefail
+    set -euo pipefail
 
     export HOME="."
 

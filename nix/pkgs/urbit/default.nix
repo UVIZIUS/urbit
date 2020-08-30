@@ -56,6 +56,7 @@ let
   urbit = pkgs.stdenv.mkDerivation {
     inherit name meta;
 
+    exename = name;
     src = ../../../pkg/urbit;
     builder = ./builder.sh;
 
@@ -70,6 +71,4 @@ let
     EVENT_TIME_DEBUG = false;
   };
 
-in
-
-urbit
+in urbit

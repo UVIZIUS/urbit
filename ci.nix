@@ -50,8 +50,6 @@ let
     nativeBuildInputs = [ native.coreutils native.gzip native.gnutar ];
     phases = [ "installPhase" ];
     installPhase = ''
-    set -x
-
     mkdir $out
 
     tar vczf $out/release.tar.gz \
