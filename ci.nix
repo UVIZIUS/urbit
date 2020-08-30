@@ -59,7 +59,7 @@ let
       --absolute-names \
       --hard-dereference \
       --transform "s,${haskell.exes.urbit-king.urbit-king}/bin/,," \
-      --transform "s,''${static.urbit}/bin/,," \
+      --transform "s,${static.urbit}/bin/,," \
       ${haskell.exes.urbit-king.urbit-king}/bin/urbit-king \
       ${static.urbit}/bin/urbit \
       ${static.urbit}/bin/urbit-worker
