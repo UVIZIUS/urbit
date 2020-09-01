@@ -7,7 +7,7 @@ cd src
 bash ./configure
 
 make all -j8
-make test
+# make test
 
 mkdir -p $out/bin
 cp ./build/urbit        $out/bin/$exename

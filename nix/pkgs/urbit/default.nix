@@ -29,6 +29,7 @@ let
   };
 
   deps = with pkgs; [
+    binutils
     curl
     gmp
     libsigsegv
@@ -53,19 +54,22 @@ let
     ca-header
   ];
 
-  urbit = pkgs.stdenv.mkDerivation {
-    inherit name meta;
+  urbit = (pkgs.makeStaticLibraries pkgs.pkgsStatic.stdenv).mkDerivation {
+    inherit meta;
+
+    name = "${name}-static";
 
     exename = name;
     src = ../../../pkg/urbit;
     builder = ./builder.sh;
 
-    buildInputs = deps ++ vendor;
+    propagatedBuildInputs = deps ++ vendor;
 
     # See https://github.com/NixOS/nixpkgs/issues/18995
     hardeningDisable = if debug then [ "all" ] else [];
 
-    CFLAGS           = if debug then "-O0 -g" else "-O3 -g -Werror";
+    LDFLAGS          = "-static";
+    CFLAGS           = "--static " + (if debug then "-O0 -g" else "-O3 -g -Werror");
     MEMORY_DEBUG     = debug;
     CPU_DEBUG        = debug;
     EVENT_TIME_DEBUG = false;

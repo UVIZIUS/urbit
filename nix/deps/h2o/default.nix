@@ -5,5 +5,5 @@ pkgs.stdenv.mkDerivation {
   src     = pkgs.sources.h2o;
   builder = ./builder.sh;
 
-  nativeBuildInputs = [ uv pkgs.binutils pkgs.openssl pkgs.zlib ];
+  nativeBuildInputs = [ uv pkgs.binutils pkgs.pkgsStatic.openssl pkgs.pkgsStatic.zlib ];
 }

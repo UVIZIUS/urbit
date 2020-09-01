@@ -37,12 +37,23 @@ let
           (type: selector: (selector type) projectPackages));
 
   native = import ./nix/nixpkgs.nix { };
-  musl64 = import ./nix/nixpkgs.nix {
+
+  musl64 = (import ./nix/nixpkgs.nix {
     crossSystem = native.lib.systems.examples.musl64;
-  };
+    # overlays = [
+    #   (final: prev: {
+    #     hello = prev.hello.override {
+    #       stdenv = prev.overrideCC prev.stdenv prev.buildPackages.gcc8;
+    #     };
+    #   })
+    # ];
+  }) // { inherit (native) sources fetch-github-lfs; };
 
   shared = import ./default.nix { pkgs = native; };
+
   static = import ./default.nix { pkgs = musl64; };
+
+
   haskell = haskellPackages musl64;
 
   package = native.stdenvNoCC.mkDerivation rec {
@@ -75,6 +86,8 @@ let
 in static // {
   inherit (shared) herb;
   inherit haskell;
+
+  pkgs = musl64;
   
   release = native.push-gcp-object {
     inherit md5;

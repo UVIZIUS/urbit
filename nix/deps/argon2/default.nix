@@ -6,4 +6,6 @@ pkgs.stdenv.mkDerivation {
   builder = ./builder.sh;
 
   NO_THREADS = true;
+
+  configureFlags = [ "--disable-shared" ];
 }
