@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation {
   name = "ge-additions";
-  src = lib.cleanSource ../../../pkg/ge-additions;
+  src = lib.cleanSource ../../../../pkg/ge-additions;
 
   buildInputs = [ ed25519 ];
 

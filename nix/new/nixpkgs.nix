@@ -28,12 +28,12 @@ let
         push-gcp-object = import ./lib/push-gcp-object.nix { inherit pkgs; };
       })
 
+      # Add general musl static overrides which are guarded by the host
+      # or target platform so we can apply them unconditionally.
+      (import ./overlays/musl.nix)
+
       # General nixpkgs and local package overrides.
       (import ./overlays/pkgs.nix)
-
-      # Add musl static overrides which are guarded by the host-platform
-      # so we can apply them unconditionally.
-      (import ./overlays/musl.nix)
     ];
 
   pkgs = import extraSources.nixpkgs {

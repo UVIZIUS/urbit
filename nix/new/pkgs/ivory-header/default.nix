@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation {
   name = "ivory-header";
-  src = fetch-github-lfs { src = ../../../bin/ivory.pill; };
+  src = fetch-github-lfs { src = ../../../../bin/ivory.pill; };
 
   nativeBuildInputs = [ xxd ];
 

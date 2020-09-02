@@ -28,7 +28,7 @@ in stdenv.mkDerivation rec {
   pname = "urbit";
   version = builtins.readFile "${src}/version";
   exename = if debug then "urbit-debug" else "urbit";
-  src = lib.cleanSource ../../../pkg/urbit;
+  src = lib.cleanSource ../../../../pkg/urbit;
 
   buildInputs = [
     argon2u
