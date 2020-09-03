@@ -1,5 +1,6 @@
 { lib
 , stdenv
+, pkgconfig
 , argon2u
 , ca-bundle
 , curl
@@ -12,23 +13,26 @@
 , libaes-siv
 , libscrypt
 , libsigsegv
+, libssh2
 , libuv
 , lmdb
 , murmur3
+, nghttp2
 , openssl
 , secp256k1
 , softfloat3
 , zlib
+, static ? stdenv.hostPlatform.isStatic
 , debug ? false
 }:
 
-let
-
-in stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "urbit";
   version = builtins.readFile "${src}/version";
   exename = if debug then "urbit-debug" else "urbit";
   src = lib.cleanSource ../../../../pkg/urbit;
+
+  nativeBuildInputs = [ pkgconfig ];
 
   buildInputs = [
     argon2u
@@ -43,9 +47,11 @@ in stdenv.mkDerivation rec {
     libaes-siv
     libscrypt
     libsigsegv
+    libssh2
     libuv
     lmdb
     murmur3
+    nghttp2
     openssl
     secp256k1
     softfloat3
@@ -61,7 +67,12 @@ in stdenv.mkDerivation rec {
   # See https://github.com/NixOS/nixpkgs/issues/18995
   hardeningDisable = lib.optionals debug [ "all" ];
 
-  CFLAGS = if debug then "-O0 -g" else "-O3 -g -Werror";
+  CFLAGS =
+    [ (if debug then "-O0" else "-O3")
+      "-g"
+    ] ++ lib.optionals (!debug) [ "-Werror" ]
+      ++ lib.optionals static [ "-static" ];
+
   MEMORY_DEBUG = debug;
   CPU_DEBUG = debug;
   EVENT_TIME_DEBUG = false;

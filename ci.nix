@@ -1,5 +1,9 @@
 let
 
+  native = import ./nix/new { };
+  static = native.pkgsStatic;
+  haskell = static.haskellProject;
+ 
   dimension = name: attrs: f:
     builtins.mapAttrs
       (k: v:
@@ -8,58 +12,43 @@ let
       )
       attrs
     // { meta.dimension.name = name; };
-  
-  haskellPackages = pkgs:
+
+  haskellPackages =
     let
       projectPackages =
-        pkgs.haskell-nix.haskellLib.selectProjectPackages 
-          (import ./pkg/hs { inherit pkgs; });
+        native.haskell-nix.haskellLib.selectProjectPackages haskell;
 
       # These functions pull out from the Haskell package all the
       # components of a particular type - which ci will then build
       # as top-level attributes.
       collectChecks = _: xs:
-        pkgs.recurseIntoAttrs (builtins.mapAttrs (_: x: x.checks) xs);
+        native.recurseIntoAttrs (builtins.mapAttrs (_: x: x.checks) xs);
       collectComponents = type: xs:
-        pkgs.haskell-nix.haskellLib.collectComponents' type xs;
+        native.haskell-nix.haskellLib.collectComponents' type xs;
     in
       # This computes the Haskell package set sliced by component type - these
       # are then displayed as the haskell build attributes in hercules ci.
-      pkgs.recurseIntoAttrs
+      native.recurseIntoAttrs
         (dimension "Haskell component" {
             "library" = collectComponents;
             "tests" = collectComponents;
             "benchmarks" = collectComponents;
             "exes" = collectComponents;
             "checks" = collectChecks;
-          }
-          # Apply the selector to the Haskell (stack) project, aka package set.
-          (type: selector: (selector type) projectPackages));
+          } # Apply the selector to the Haskell (stack) project, aka package set.
+            (type: selector: (selector type) projectPackages));
 
-  native = import ./nix/nixpkgs.nix { };
+  releaseArchive = native.stdenvNoCC.mkDerivation rec {
+    name = "release-archive";
 
-  musl64 = (import ./nix/nixpkgs.nix {
-    crossSystem = native.lib.systems.examples.musl64;
-    # overlays = [
-    #   (final: prev: {
-    #     hello = prev.hello.override {
-    #       stdenv = prev.overrideCC prev.stdenv prev.buildPackages.gcc8;
-    #     };
-    #   })
-    # ];
-  }) // { inherit (native) sources fetch-github-lfs; };
+    nativeBuildInputs = [
+      native.coreutils
+      native.gzip
+      native.gnutar
+    ];
 
-  shared = import ./default.nix { pkgs = native; };
-
-  static = import ./default.nix { pkgs = musl64; };
-
-
-  haskell = haskellPackages musl64;
-
-  package = native.stdenvNoCC.mkDerivation rec {
-    name = "release-package";
-    nativeBuildInputs = [ native.coreutils native.gzip native.gnutar ];
     phases = [ "installPhase" ];
+
     installPhase = ''
     mkdir $out
 
@@ -81,20 +70,26 @@ let
     preferLocalBuild = true;
   };
 
-  md5 = builtins.readFile "${package}/md5";
-
-in static // {
-  inherit (shared) herb;
-  inherit haskell;
-
-  pkgs = musl64;
-  
-  release = native.push-gcp-object {
-    inherit md5;
-
-    src = "${package}/release.tar.gz";
-    bucket = "tlon-us-terraform";
-    object = "releases/${md5}.tar.gz";
-    serviceAccountKey = builtins.readFile("/var/run/keys/service-account.json");
+in {
+  native = {
+    inherit (native) herb urbit urbit-debug;
   };
+
+  static = {
+    inherit (static) urbit urbit-debug;
+  };
+
+  haskell = haskellPackages;
+  
+  release =
+    let
+      md5 = builtins.readFile "${releaseArchive}/md5";
+    in native.push-gcp-object {
+      inherit md5;
+
+      src = "${releaseArchive}/release.tar.gz";
+      bucket = "tlon-us-terraform";
+      object = "releases/${md5}.tar.gz";
+      serviceAccountKey = builtins.readFile("/var/run/keys/service-account.json");
+    };
 }

@@ -25,5 +25,7 @@ final: prev:
 
   urbit = final.callPackage ../pkgs/urbit { };
 
-  urbit-debug = final.callPackage ../pkgs/urbit-debug { debug = true; };
-}
+  urbit-debug = final.callPackage ../pkgs/urbit { debug = true; };
+
+  haskellProject = final.callPackage ../../../pkg/hs { };
+} 

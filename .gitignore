@@ -13,6 +13,7 @@ result-*
 # package manager caches
 #
 .stack-work
+stack.yaml.lock
 node_modules
 
 # build and release artifacts

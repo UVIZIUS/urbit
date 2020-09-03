@@ -1,20 +1,48 @@
 { system ? builtins.currentSystem
+, crossSystem ? null
 , config ? {}
 , overlays ? []
 , sources ? {}
-, pkgs ? import ./nixpkgs.nix { inherit system config sources; }
 }:
 
 let
 
-  pkgsMusl = import ./nixpkgs.nix {
-    inherit system config sources;
+  extraSources = import ../sources.nix { inherit pkgs; } // sources;
 
-    crossSystem = pkgs.lib.systems.examples.musl64;
+  haskellNix = import extraSources."haskell.nix" {
+    sourcesOverride = {
+      hackage = extraSources."hackage.nix";
+      stackage = extraSources."stackage.nix";
+    };
   };
-  
-in
 
-{
-  inherit pkgs pkgsMusl;
-}
+  extraLib = import ./lib { inherit pkgs; };
+
+  extraOverlays =
+    haskellNix.overlays ++ [
+      (_final: _prev: {
+        # Add top-level sources attribute so we can use `pkgs.sources`
+        # in subsequent overlays.
+        sources = extraSources;
+
+        # Add our custom library and utility functions.
+      } // extraLib)
+
+      # General nixpkgs and local package overrides.
+      (import ./overlays/pkgs.nix)
+    ];
+
+    crossOverlays = [
+      # Add general musl+static overrides which are guarded by the host platform
+      # so we can apply them unconditionally.
+      (import ./overlays/musl.nix)
+    ];
+
+  pkgs = import extraSources.nixpkgs {
+    inherit system crossSystem crossOverlays;
+
+    overlays = extraOverlays ++ overlays;
+    config = haskellNix.config // config;
+  };
+
+in pkgs
