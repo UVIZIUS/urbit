@@ -58,6 +58,10 @@ stdenv.mkDerivation rec {
     zlib
   ];
 
+  postPatch = ''
+    patchShebangs ./configure
+  '';
+  
   installPhase = ''
     mkdir -p $out/bin
     cp ./build/urbit $out/bin/$exename
