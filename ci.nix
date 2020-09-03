@@ -15,7 +15,7 @@ let
   haskell =
     let
       projectPackages =
-        native.haskell-nix.haskellLib.selectProjectPackages native.haskellProject.override { static = true; };
+        native.haskell-nix.haskellLib.selectProjectPackages (native.haskellProject.override { static = true; });
 
       # These functions pull out from the Haskell package all the
       # components of a particular type - which ci will then build
