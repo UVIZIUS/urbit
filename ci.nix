@@ -2,7 +2,6 @@ let
 
   native = import ./nix/new { };
   static = native.pkgsStatic;
-  haskell = static.haskellProject;
  
   dimension = name: attrs: f:
     builtins.mapAttrs
@@ -13,10 +12,10 @@ let
       attrs
     // { meta.dimension.name = name; };
 
-  haskellPackages =
+  haskell =
     let
       projectPackages =
-        native.haskell-nix.haskellLib.selectProjectPackages haskell;
+        native.haskell-nix.haskellLib.selectProjectPackages static.haskellProject;
 
       # These functions pull out from the Haskell package all the
       # components of a particular type - which ci will then build
