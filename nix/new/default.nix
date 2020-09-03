@@ -2,6 +2,7 @@
 , crossSystem ? null
 , config ? {}
 , overlays ? []
+, crossOverlays ? []
 , sources ? {}
 }:
 
@@ -32,17 +33,18 @@ let
       (import ./overlays/pkgs.nix)
     ];
 
-    crossOverlays = [
+    extraCrossOverlays = [
       # Add general musl+static overrides which are guarded by the host platform
       # so we can apply them unconditionally.
       (import ./overlays/musl.nix)
     ];
 
   pkgs = import extraSources.nixpkgs {
-    inherit system crossSystem crossOverlays;
+    inherit system crossSystem;
 
-    overlays = extraOverlays ++ overlays;
     config = haskellNix.config // config;
+    overlays = extraOverlays ++ overlays;
+    crossOverlays = extraCrossOverlays ++ crossOverlays;
   };
 
 in pkgs
