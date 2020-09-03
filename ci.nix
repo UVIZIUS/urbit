@@ -79,7 +79,7 @@ in {
     inherit (static) urbit urbit-debug;
   };
 
-  haskell = haskellPackages;
+  # haskell = haskellPackages;
   
   release =
     let

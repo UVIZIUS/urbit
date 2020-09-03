@@ -7,14 +7,14 @@
 
 let
 
-  staticFlags = stdenv.lib.optionals static ([
+  staticFlags = stdenv.lib.optionals static [
     "--disable-executable-dynamic"
     "--disable-shared"
     "--ghc-option=-optl=-pthread"
     "--ghc-option=-optl=-static"
     "--ghc-option=-optl=-L${gmp}/lib"
     "--ghc-option=-optl=-L${zlib}/lib"
-  ]);
+  ];
 
 in haskell-nix.stackProject {
   src = haskell-nix.cleanSourceHaskell {
