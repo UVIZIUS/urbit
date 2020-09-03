@@ -15,7 +15,7 @@ let
   haskell =
     let
       projectPackages =
-        native.haskell-nix.haskellLib.selectProjectPackages static.haskellProject;
+        native.haskell-nix.haskellLib.selectProjectPackages native.haskellProject.override { static = true; };
 
       # These functions pull out from the Haskell package all the
       # components of a particular type - which ci will then build
@@ -78,7 +78,7 @@ in {
     inherit (static) urbit urbit-debug;
   };
 
-  # haskell = haskellPackages;
+  haskell = haskell;
   
   release =
     let
