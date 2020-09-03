@@ -24,4 +24,6 @@ in if !(isStatic && isMusl) then {} else {
   rhash = prev.rhash.override { stdenv = prev.gcc9Stdenv; };
 
   lmdb = prev.lmdb.override { stdenv = prev.gcc9Stdenv; };
+
+  numactl = prev.numactl.override { stdenv = prev.gcc9Stdenv; };
 }
