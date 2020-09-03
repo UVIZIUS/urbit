@@ -1,11 +1,11 @@
-{ stdenv, xxd, cacert }:
+{ stdenvNoCC, xxd, cacert }:
 
-stdenv.mkDerivation {
+stdenvNoCC.mkDerivation {
   name = "ca-bundle";
 
   nativeBuildInputs = [ cacert xxd ];
 
-  phases = [ "installPhase" "fixupPhase" ];
+  phases = [ "installPhase" ];
 
   installPhase = ''
     if ! [ -f "$SSL_CERT_FILE" ]; then
@@ -14,12 +14,13 @@ stdenv.mkDerivation {
     fi
 
     mkdir ./include
+
     cat $SSL_CERT_FILE > include/ca-bundle.crt
     xxd -i include/ca-bundle.crt > ca-bundle.h
+
     mkdir -p $out/include
     mv ca-bundle.h $out/include/
   '';
 
   preferLocalBuild = true;
 }
-
