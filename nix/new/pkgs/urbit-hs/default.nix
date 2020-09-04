@@ -19,7 +19,7 @@ let
 in haskell-nix.stackProject {
   src = haskell-nix.cleanSourceHaskell {
     name = "urbit-hs";
-    src = ../../../pkg/hs;
+    src = ../../../../pkg/hs;
   };
 
   modules = [{
