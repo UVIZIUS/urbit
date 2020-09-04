@@ -36,31 +36,33 @@ let
           checks = collectChecks;
         } (type: selector: (selector type) packages));
 
-  # releaseArchive = native.stdenvNoCC.mkDerivation {
-  #   name = "release-archive";
+  haskell = haskellProject musl64.urbit-hs;
 
-  #   nativeBuildInputs = [ native.coreutils native.gzip native.gnutar ];
+  releaseArchive = native.stdenvNoCC.mkDerivation {
+    name = "release-archive";
 
-  #   phases = [ "installPhase" ];
+    nativeBuildInputs = [ native.coreutils native.gzip native.gnutar ];
 
-  #   installPhase = ''
-  #     mkdir $out
+    phases = [ "installPhase" ];
 
-  #     tar vczf $out/release.tar.gz \
-  #       --owner=0 --group=0 --mode=u+rw,uga+r \
-  #       --absolute-names \
-  #       --hard-dereference \
-  #       --transform "s,${haskell.exes.urbit-king.urbit-king}/bin/,," \
-  #       --transform "s,${static.urbit}/bin/,," \
-  #       ${haskell.exes.urbit-king.urbit-king}/bin/urbit-king \
-  #       ${static.urbit}/bin/urbit \
-  #       ${static.urbit}/bin/urbit-worker
+    installPhase = ''
+      mkdir $out
 
-  #     md5sum $out/release.tar.gz | awk '{printf $1}' > $out/md5
-  #   '';
+      tar vczf $out/release.tar.gz \
+        --owner=0 --group=0 --mode=u+rw,uga+r \
+        --absolute-names \
+        --hard-dereference \
+        --transform "s,${haskell.exes.urbit-king.urbit-king}/bin/,," \
+        --transform "s,${musl64.pkgsStatic.urbit}/bin/,," \
+        ${haskell.exes.urbit-king.urbit-king}/bin/urbit-king \
+        ${musl64.pkgsStatic.urbit}/bin/urbit \
+        ${musl64.pkgsStatic.urbit}/bin/urbit-worker
 
-  #   preferLocalBuild = true;
-  # };
+      md5sum $out/release.tar.gz | awk '{printf $1}' > $out/md5
+    '';
+
+    preferLocalBuild = true;
+  };
 
 in {
   native = native.recurseIntoAttrs {
@@ -71,18 +73,17 @@ in {
     inherit (musl64.pkgsStatic) urbit urbit-debug;
   };
 
-  # haskell = static.urbit-hs.urbit-king;
-  haskell = haskellProject musl64.urbit-hs;
+  inherit haskell;
+  
+  release =
+    let
+      md5 = builtins.readFile "${releaseArchive}/md5";
+    in native.pushStorageObject {
+      inherit md5;
 
-  # release =
-  #   let
-  #     md5 = builtins.readFile "${releaseArchive}/md5";
-  #   in native.push-gcp-object {
-  #     inherit md5;
-
-  #     src = "${releaseArchive}/release.tar.gz";
-  #     bucket = "tlon-us-terraform";
-  #     object = "releases/${md5}.tar.gz";
-  #     serviceAccountKey = builtins.readFile("/var/run/keys/service-account.json");
-  #   };
+      src = "${releaseArchive}/release.tar.gz";
+      bucket = "tlon-us-terraform";
+      object = "releases/${md5}.tar.gz";
+      serviceAccountKey = builtins.readFile("/var/run/keys/service-account.json");
+    };
 }

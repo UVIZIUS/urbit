@@ -27,7 +27,7 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = "urbit";
+  pname = exename;
   version = builtins.readFile "${src}/version";
   exename = if debug then "urbit-debug" else "urbit";
   src = lib.cleanSource ../../../../pkg/urbit;
