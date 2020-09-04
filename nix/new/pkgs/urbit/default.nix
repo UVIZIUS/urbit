@@ -68,9 +68,6 @@ stdenv.mkDerivation rec {
     cp ./build/urbit-worker $out/bin/$exename-worker
   '';
 
-  # See https://github.com/NixOS/nixpkgs/issues/18995
-  hardeningDisable = lib.optionals debug [ "all" ];
-
   CFLAGS =
     [ (if debug then "-O0" else "-O3")
       "-g"
@@ -80,4 +77,9 @@ stdenv.mkDerivation rec {
   MEMORY_DEBUG = debug;
   CPU_DEBUG = debug;
   EVENT_TIME_DEBUG = false;
+
+  # See https://github.com/NixOS/nixpkgs/issues/18995
+  hardeningDisable = lib.optionals debug [ "all" ];
+
+  enableParallelBuilding = true;
 }

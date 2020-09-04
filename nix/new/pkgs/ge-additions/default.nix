@@ -6,10 +6,8 @@ stdenv.mkDerivation {
 
   buildInputs = [ ed25519 ];
 
-  postPatch = ''
-    patchShebangs ./configure
-  '';
-
   installFlags = [ "PREFIX=$(out)" ];
+
+  enableParallelBuilding = true;
 }
 

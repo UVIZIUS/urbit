@@ -1,8 +1,8 @@
-{ stdenvNoCC, fetch-github-lfs, xxd }:
+{ stdenvNoCC, fetchGithubLFS, xxd }:
 
 stdenvNoCC.mkDerivation {
   name = "ivory-header";
-  src = fetch-github-lfs { src = ../../../../bin/ivory.pill; };
+  src = fetchGithubLFS { src = ../../../../bin/ivory.pill; };
 
   nativeBuildInputs = [ xxd ];
 
@@ -18,4 +18,3 @@ stdenvNoCC.mkDerivation {
 
   preferLocalBuild = true;
 }
-

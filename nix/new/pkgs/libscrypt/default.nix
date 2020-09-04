@@ -20,20 +20,16 @@ stdenv.mkDerivation {
 
     CFLAGS="-I$src -Wall -ffast-math -O3 -D_FORTIFY_SOURCE=2 -fstack-protector"
 
-    for s in $sources
-    do echo $CC $CFLAGS -c $src/$s.c -o $s.o
+    for s in $sources; do 
        $CC $CFLAGS -c $src/$s.c -o $s.o
     done
 
     $AR rcs libscrypt.a *.o
-        '';
+  '';
 
   installPhase = ''
     mkdir -p $out/{lib,include}
     cp libscrypt.a $out/lib
     cp $src/*.h $out/include/
   '';
-
-  CFLAGS = "-Wall -ffast-math -O3 -D_FORTIFY_SOURCE=2 -fstack-protector";
 }
-

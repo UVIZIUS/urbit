@@ -1,6 +1,6 @@
 { pkgs }:
 
 {
-  fetch-github-lfs = import ./fetch-github-lfs.nix { inherit pkgs; };
-  push-gcp-object = import ./push-gcp-object.nix { inherit pkgs; };
+  fetchGithubLFS = import ./fetch-github-lfs.nix { inherit pkgs; };
+  pushStorageObject = import ./push-storage-object.nix { inherit pkgs; };
 }

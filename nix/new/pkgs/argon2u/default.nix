@@ -25,4 +25,6 @@ stdenv.mkDerivation {
   ];
 
   NO_THREADS = true;
+
+  enableParallelBuilding = true;
 }

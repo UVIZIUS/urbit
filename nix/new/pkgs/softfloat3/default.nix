@@ -22,5 +22,7 @@ stdenv.mkDerivation {
     cp $src/source/include/*.h $out/include/
     cp softfloat.a $out/lib/libsoftfloat3.a
   '';
+
+  enableParallelBuilding = true;
 }
 

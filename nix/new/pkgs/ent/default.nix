@@ -9,4 +9,6 @@ stdenv.mkDerivation {
   '';
 
   installFlags = [ "PREFIX=$(out)" ];
+
+  enableParallelBuilding = true;
 }

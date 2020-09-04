@@ -15,4 +15,3 @@ stdenv.mkDerivation {
     cp $src/*.h $out/include/
   '';
 }
-

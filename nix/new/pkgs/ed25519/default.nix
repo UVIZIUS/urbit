@@ -6,6 +6,8 @@ stdenv.mkDerivation {
   src = sources.ed25519;
 
   buildPhase = ''
+    CFLAGS="-O3 -Wall -I$src/src"
+
     for f in $(find src -type f -name '*.c'); do
       $CC $CFLAGS -c $f -o "''${f//\//_}.o"
     done
@@ -16,7 +18,4 @@ stdenv.mkDerivation {
     $AR rcs $out/lib/libed25519.a *.o
     cp $src/src/*.h $out/include/
   '';
-
-  CFLAGS = "-O3 -Wall -I$src/src";
 }
-
