@@ -63,11 +63,11 @@ let
   # };
 
 in {
-  native = {
+  native = native.recurseIntoAttrs {
     inherit (native) herb urbit urbit-debug;
   };
 
-  musl64 = {
+  musl64 = native.recurseIntoAttrs {
     inherit (musl64.pkgsStatic) urbit urbit-debug;
   };
 
