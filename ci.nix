@@ -21,7 +21,7 @@ let
   collectComponents = type: xs:
     pkgs.haskell-nix.haskellLib.collectComponents' type xs;
 
-  haskellComponents = project:
+  haskellComponents = ps:
     pkgs.recurseIntoAttrs
       (dimension "haskell" {
         library = collectComponents;
@@ -29,10 +29,8 @@ let
         benchmarks = collectComponents;
         exes = collectComponents;
         checks = collectChecks;
-      } (type: selector:
-          (selector type)
-          (pkgs.haskell-nix.haskellLib.selectProjectPackages project)));
- 
+      } (type: selector: (selector type) ps));
+
   # releaseArchive = pkgs.stdenvNoCC.mkDerivation rec {
   #   name = "release-archive";
 
@@ -66,15 +64,17 @@ let
   # };
 
 in {
-  native = dimension "native" {
+  native = {
     inherit (pkgs) herb urbit urbit-debug;
   };
 
-  static = dimension "static" {
+  static = {
     inherit (pkgs.pkgsStatic) urbit urbit-debug;
-  };
+   };
 
-  haskell = haskellComponents pkgs.pkgsStatic.urbit-hs;
+  haskell =
+    haskellComponents
+      (pkgs.haskell-nix.haskellLib.selectProjectPackages pkgs.pkgsStatic.urbit-hs);
 
   # release =
   #   let
