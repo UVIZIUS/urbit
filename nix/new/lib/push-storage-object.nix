@@ -19,7 +19,7 @@ let
   sha256 = builtins.hashString "sha256" "${md5} ${uri}";
 
 in pkgs.stdenvNoCC.mkDerivation {
-  name = "gcp-object-md5sum";
+  name = "storage-object-${md5}";
   nativeBuildInputs = [ pkgs.coreutils pkgs.xxd pkgs.google-cloud-sdk ];
   phases = [ "installPhase" ];
   installPhase = ''
