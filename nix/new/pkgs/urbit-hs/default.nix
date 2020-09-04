@@ -1,6 +1,6 @@
 { stdenv
-, haskell-nix
 , gmp
+, haskell-nix
 , zlib
 , static ? stdenv.hostPlatform.isStatic
 }:
@@ -12,14 +12,14 @@ let
     "--disable-shared"
     "--ghc-option=-optl=-pthread"
     "--ghc-option=-optl=-static"
-    "--ghc-option=-optl=-L${gmp}/lib"
+    "--ghc-option=-optl=-L${gmp.override { withStatic = static; }}/lib"
     "--ghc-option=-optl=-L${zlib}/lib"
   ];
 
 in haskell-nix.stackProject {
   src = haskell-nix.cleanSourceHaskell {
-    name = "urbit-king";
-    src = ./.;
+    name = "urbit-hs";
+    src = ../../../pkg/hs;
   };
 
   modules = [{

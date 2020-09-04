@@ -23,11 +23,11 @@ final: prev:
 
   softfloat3 = final.callPackage ../pkgs/softfloat3 { };
 
+  herb = final.callPackage ../pkgs/herb { };
+
   urbit = final.callPackage ../pkgs/urbit { };
 
   urbit-debug = final.callPackage ../pkgs/urbit { debug = true; };
 
-  herb = final.callPackage ../pkgs/herb { };
-
-  haskellProject = final.callPackage ../../../pkg/hs { };
+  urbit-hs = final.callPackage ../pkgs/urbit-hs { };
 } 
