@@ -1,9 +1,9 @@
 let
 
   native = import ./nix/new { };
-  static = native.pkgsStatic;
+  musl64 = import ./nix/new { crossSystem = native.lib.systems.examples.musl64; };
  
-  haskellProject = pkgs: 
+  haskellProject = project:
     let
       # These functions pull out from the Haskell package all the
       # components of a particular type - which ci will then build
@@ -16,13 +16,13 @@ let
         ) attrs // { meta.dimension.name = name; };
 
       packages =
-        pkgs.haskell-nix.haskellLib.selectProjectPackages pkgs.urbit-hs;
+        native.haskell-nix.haskellLib.selectProjectPackages project;
 
       collectChecks = _: xs:
-        pkgs.recurseIntoAttrs (builtins.mapAttrs (_: x: x.checks) xs);
+        native.recurseIntoAttrs (builtins.mapAttrs (_: x: x.checks) xs);
 
       collectComponents = type: xs:
-        pkgs.haskell-nix.haskellLib.collectComponents' type xs;
+        native.haskell-nix.haskellLib.collectComponents' type xs;
 
     in
       # This computes the Haskell package set sliced by component type - these
@@ -67,11 +67,12 @@ in {
     inherit (native) herb urbit urbit-debug;
   };
 
-  static = {
-    inherit (static) urbit urbit-debug;
+  musl64 = {
+    inherit (musl64.pkgsStatic) urbit urbit-debug;
   };
 
-  haskell = haskellProject static;
+  # haskell = static.urbit-hs.urbit-king;
+  haskell = haskellProject musl64.urbit-hs;
 
   # release =
   #   let

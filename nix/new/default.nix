@@ -1,8 +1,8 @@
 { system ? builtins.currentSystem
 , crossSystem ? null
-, config ? {}
-, overlays ? []
 , crossOverlays ? []
+, overlays ? []
+, config ? {}
 , sources ? {}
 }:
 
@@ -42,9 +42,9 @@ let
   pkgs = import extraSources.nixpkgs {
     inherit system crossSystem;
 
-    config = haskellNix.config // config;
-    overlays = extraOverlays ++ overlays;
     crossOverlays = extraCrossOverlays ++ crossOverlays;
+    overlays = extraOverlays ++ overlays;
+    config = haskellNix.config // config;
   };
 
 in pkgs
