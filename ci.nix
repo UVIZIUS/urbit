@@ -1,5 +1,11 @@
 let
  
+  pkgs = import ./nix/new { };
+
+  # These functions pull out from the Haskell package all the
+  # components of a particular type - which ci will then build
+  # as top-level attributes.
+
   dimension = name: attrs: f:
     builtins.mapAttrs
       (k: v:
@@ -9,21 +15,24 @@ let
       attrs
     // { meta.dimension.name = name; };
 
-  pkgs = import ./nix/new { };
-
-  haskellProject =
-    pkgs.haskell-nix.haskellLib.selectProjectPackages
-      (pkgs.urbit-hs.override { static = true; });
-
-  # These functions pull out from the Haskell package all the
-  # components of a particular type - which ci will then build
-  # as top-level attributes.
   collectChecks = _: xs:
     pkgs.recurseIntoAttrs (builtins.mapAttrs (_: x: x.checks) xs);
 
   collectComponents = type: xs:
     pkgs.haskell-nix.haskellLib.collectComponents' type xs;
 
+  haskellComponents = project:
+    pkgs.recurseIntoAttrs
+      (dimension "haskell" {
+        library = collectComponents;
+        tests = collectComponents;
+        benchmarks = collectComponents;
+        exes = collectComponents;
+        checks = collectChecks;
+      } (type: selector:
+          (selector type)
+          (pkgs.haskell-nix.haskellLib.selectProjectPackages project)));
+ 
   # releaseArchive = pkgs.stdenvNoCC.mkDerivation rec {
   #   name = "release-archive";
 
@@ -57,24 +66,15 @@ let
   # };
 
 in {
-  native = {
+  native = dimension "native" {
     inherit (pkgs) herb urbit urbit-debug;
   };
 
-  static = {
+  static = dimension "static" {
     inherit (pkgs.pkgsStatic) urbit urbit-debug;
   };
 
-  # This computes the Haskell package set sliced by component type -
-  # these component names are then displayed as the top-level attributes.
-  haskell = pkgs.recurseIntoAttrs
-    (dimension "component" {
-      "library" = collectComponents;
-      "tests" = collectComponents;
-      "benchmarks" = collectComponents;
-      "exes" = collectComponents;
-      "checks" = collectChecks;
-    } (type: selector: (selector type) haskellProject));
+  haskell = haskellComponents pkgs.pkgsStatic.urbit-hs;
 
   # release =
   #   let
