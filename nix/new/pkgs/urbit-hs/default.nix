@@ -1,5 +1,5 @@
 { stdenv
-, gmp
+, gmp6
 , haskell-nix
 , zlib
 , static ? stdenv.hostPlatform.isStatic
@@ -12,7 +12,7 @@ let
     "--disable-shared"
     "--ghc-option=-optl=-pthread"
     "--ghc-option=-optl=-static"
-    "--ghc-option=-optl=-L${gmp.override { withStatic = static; }}/lib"
+    "--ghc-option=-optl=-L${gmp6}/lib"
     "--ghc-option=-optl=-L${zlib}/lib"
   ];
 

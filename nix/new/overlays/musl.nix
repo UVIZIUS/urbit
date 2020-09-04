@@ -17,8 +17,6 @@ let
     if cond then pkg.overrideAttrs f else pkg;
 
 in {
-  stdenv = if isStatic && isMusl then prev.gcc9Stdenv else prev.stdenv;
-
   libsigsegv = overrideAttrsWhen isStatic prev.libsigsegv (old: {
     patches =
       optionalsNull old.patches ++ [
@@ -33,8 +31,7 @@ in {
       ];
   });
 
-  # rhash = prev.rhash.override { stdenv = prev.gcc9Stdenv; };
-  # rhash = overrideIf isStatic prev.rhash { stdenv = prev.gcc9Stdenv; };
-  # lmdb = prev.lmdb.override { stdenv = prev.gcc9Stdenv; };
-  # numactl = prev.numactl.override { stdenv = prev.gcc9Stdenv; };
+  rhash = overrideWhen isMusl prev.rhash { stdenv = prev.gcc9Stdenv; };
+  numactl = overrideWhen isMusl prev.numactl { stdenv = prev.gcc9Stdenv; };
+  lmdb = overrideWhen isMusl prev.lmdb { stdenv = prev.gcc9Stdenv; };
 }
