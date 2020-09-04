@@ -8,6 +8,7 @@
   |=  app=app-name
   ?+  app  !!
     %chat  %graph-validator-chat
+    %link  %graph-validator-link
   ==
 ++  dejs
   =,  dejs:format
@@ -37,7 +38,11 @@
       |=  jon=json
       ^-  app-name
       ?>  ?=(%s -.jon)
-      %chat
+      ?:  =(p.jon %chat)
+        %chat
+      ?:  =(p.jon %link)
+        %link
+      !!
     ::
     ++  leave
       %-  ot

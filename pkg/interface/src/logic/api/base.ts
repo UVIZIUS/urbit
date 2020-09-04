@@ -9,7 +9,6 @@ export default class BaseApi<S extends object = {}> {
 
   unsubscribe(id: number) {
     this.channel.unsubscribe(id);
-
   }
 
   subscribe(path: Path, method, ship = this.ship, app: string, success, fail, quit) {
@@ -57,4 +56,12 @@ export default class BaseApi<S extends object = {}> {
   scry<T>(app: string, path: Path): Promise<T> {
     return fetch(`/~/scry/${app}${path}.json`).then(r => r.json() as Promise<T>);
   }
+
+  thread<any>(inputMark: string, thread: string, outputMark: string, body) {
+    return fetch(`/spider/${inputMark}/${thread}/${outputMark}`, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    }).then(r => r.json() as Promise<any>);
+  }
+
 }
