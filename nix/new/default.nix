@@ -17,7 +17,7 @@ let
     };
   };
 
-  extraLib = import ./lib { inherit pkgs; };
+  extraLib = import ./lib { inherit (pkgs) callPackage; };
 
   extraOverlays =
     haskellNix.overlays ++ [

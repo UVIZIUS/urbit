@@ -26,10 +26,6 @@ let
       sha256 = "1kpjvvd9q9wwr3314q5ymvxii4dv2d27295bzly225wlc552xhja";
     };
     builder = ./headers_builder.sh;
-
-    # Ensure `pwd` is available on the PATH so we can replace `/bin/pwd`
-    # usage in the headers Makefile.
-    native_inputs = [ nixpkgs.coreutils ];
   };
 
   gcc = import ./gcc {

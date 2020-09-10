@@ -3,23 +3,25 @@
 let
 
   osx =
-    pkgs.lib.optionals pkgs.stdenv.isDarwin
-      (with pkgs.darwin.apple_sdk.frameworks; [ Cocoa CoreServices ]);
+    with pkgs;
+    lib.optionals stdenv.isDarwin (
+      with darwin.apple_sdk.frameworks;
+      [ Cocoa CoreServices ]);
 
-in pkgs.stdenv.mkDerivation {
-  name    = "uv";
-  src     = pkgs.sources.libuv;
-  builder = ./builder.sh;
+in
 
-  nativeBuildInputs = [
-    pkgs.autoconf
-    pkgs.automake
-    pkgs.libtool
-    pkgs.m4
-  ];
+pkgs.stdenv.mkDerivation rec {
+  name        = "uv-64294";
+  buildInputs = osx ++ (with pkgs; [ autoconf automake libtool m4 ]);
+  builder     = ./builder.sh;
 
-  buildInputs = osx;
-  
-  configureFlags = [ "--disable-shared" ];
   CFLAGS         = "-fPIC";
+  configureFlags = [ "--disable-shared" ];
+
+  src = pkgs.fetchFromGitHub {
+    owner = "urbit";
+    repo = "libuv";
+    rev = "6429495dc9a80aaf1c243038b381451f12bc7dcf";
+    sha256 = "07m2m4v9mds0wihzjxjwswwfj3rnk2ycr3vgwfcrvnb5xjz7rs15";
+  };
 }

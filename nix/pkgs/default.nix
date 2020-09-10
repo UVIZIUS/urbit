@@ -1,4 +1,4 @@
-{ pkgs ? import ../nixpkgs.nix { } }:
+{ pkgs ? import ../nixpkgs.nix }:
 
 let
 
@@ -7,7 +7,7 @@ let
   ent          = import ./ent          { inherit pkgs; };
   arvo         = import ./arvo         { inherit pkgs; };
   arvo-ropsten = import ./arvo-ropsten { inherit pkgs; };
-  herb         = import ./herb         { inherit pkgs; };
+  herb         = import ../../pkg/herb { inherit pkgs; };
 
   ge-additions = import ./ge-additions {
     inherit pkgs;
@@ -22,7 +22,7 @@ let
     import ./urbit {
       inherit pkgs ent debug ge-additions libaes_siv;
       inherit (deps) argon2 murmur3 uv ed25519 scrypt softfloat3;
-      inherit (deps) libsigsegv secp256k1 h2o ivory-header ca-header;
+      inherit (deps) secp256k1 h2o ivory-header ca-header;
     };
 
   urbit       = mkUrbit { debug = false; };

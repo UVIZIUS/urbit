@@ -1,6 +1,9 @@
-{ pkgs }:
+{ callPackage }:
 
 {
-  fetchGithubLFS = import ./fetch-github-lfs.nix { inherit pkgs; };
-  pushStorageObject = import ./push-storage-object.nix { inherit pkgs; };
+  bootFakeShip = callPackage ./boot-fake-ship { };
+
+  fetchGithubLFS = callPackage ./fetch-github-lfs { };
+
+  pushStorageObject = callPackage ./push-storage-object { };
 }

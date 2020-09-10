@@ -66,7 +66,7 @@ let
 
 in {
   native = native.recurseIntoAttrs {
-    inherit (native) herb urbit urbit-debug;
+    inherit (native) arvo herb urbit urbit-debug;
   };
 
   musl64 = native.recurseIntoAttrs {

@@ -1,9 +1,11 @@
-{ pkgs, ivory }:
+{
+  pkgs,
+  ivory ? ../../../bin/ivory.pill
+}:
 
 pkgs.stdenv.mkDerivation {
   name              = "ivory.h";
-  src               = ivory;
   builder           = ./builder.sh;
-  preferLocalBuild  = true;
-  nativeBuildInputs = [ pkgs.xxd ];
+  nativeBuildInputs = with pkgs; [ xxd ];
+  IVORY             = ivory;
 }

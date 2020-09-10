@@ -1,4 +1,4 @@
-{ pkgs }:
+{ stdenvNoCC, runCommandLocal, cacert, curl, jq }:
 
 { src
   # `name` shouldn't use `baseNameOf` otherwise we'll
@@ -27,7 +27,7 @@ let
   # as the fixed-output derivation's `sha256 = oid`, and to form a download
   # operation payload to request the actual lfs blob's real url.
   pointer = builtins.fromJSON (builtins.readFile
-    (pkgs.runCommandLocal "lfs-pointer-${name}" { } ''
+    (runCommandLocal "lfs-pointer-${name}" { } ''
       oid="null"
       size="null"
 
@@ -64,9 +64,9 @@ let
 
   # 1. Request the actual url of the binary file from the lfs batch api.
   # 2. Download the binary file contents to `$out`.
-  download = pkgs.stdenvNoCC.mkDerivation {
+  download = stdenvNoCC.mkDerivation {
     name = "lfs-blob-${name}";
-    nativeBuildInputs = [ pkgs.curl pkgs.jq ];
+    nativeBuildInputs = [ curl jq ];
     phases = [ "installPhase" ];
     installPhase = ''
       curl=(
@@ -94,9 +94,9 @@ let
       "''${curl[@]}" -s --output "$out" "$href"
     '';
 
-    impureEnvVars = pkgs.stdenvNoCC.lib.fetchers.proxyImpureEnvVars;
+    impureEnvVars = stdenvNoCC.lib.fetchers.proxyImpureEnvVars;
 
-    SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+    SSL_CERT_FILE = "${cacert}/etc/ssl/certs/ca-bundle.crt";
 
     outputHashAlgo = "sha256";
     outputHashMode = "flat";
@@ -107,4 +107,4 @@ let
 
 # If `pointer.oid` is null then supplied the `src` must be a binary
 # blob and can be returned directly.
-in if pointer.oid == null || pointer.size == null then src else download
+in (if pointer.oid == null || pointer.size == null then src else download)

@@ -1,28 +1,13 @@
-{ sources ? import ./sources.nix, ... }@args:
-
 let
 
-  haskellNix = import sources.haskell-nix { };
+  rev  = "61c3169a0e17d789c566d5b241bfe309ce4a6275";
+  hash = "0qbycg7wkb71v20rchlkafrjfpbk2fnlvvbh3ai9pyfisci5wxvq";
+  pkgs = builtins.fetchTarball {
+    name = "nixpkgs-2019-01-15";
+    url = "https://github.com/nixos/nixpkgs/archive/${rev}.tar.gz";
+    sha256 = hash;
+  };
 
-  nixpkgsArgs = {
-    config = haskellNix.nixpkgsArgs.config;
-    overlays = haskellNix.nixpkgsArgs.overlays; # ++ [
-     #  (final: prev: {
-    #     stdenv = prev.makeStaticLibraries prev.stdenv;
-    #     lmdb = prev.lmdb.override {
-    #       stdenv = prev.makeStaticLibraries prev.stdenv;
-    #     };
-    #   })
-    # ];
-  } // args;
+in
 
-  # By using haskell.nix's own pin we should get a higher cache
-  # hit rate from `cachix use iohk`.
-  pkgs = import haskellNix.sources.nixpkgs-2003 nixpkgsArgs;
-
-in pkgs // {
-  inherit sources;
-
-  fetchGithubLFS = import ./lib/fetch-github-lfs.nix { inherit pkgs; };
-  pushStorageObject = import ./lib/push-storage-object.nix { inherit pkgs; };
-}
+import pkgs {}

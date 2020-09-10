@@ -7,11 +7,11 @@ Unix control of Urbit
 To run without installing anything:
 
 ```bash
-nix-shell --pure --command 'python ./herb -d "(add 3 4)"' ../../nix/pkgs/herb
+nix-shell --pure --command 'python ./herb -d "(add 3 4)"'
 ```
 
 To install `herb`:
 
 ```bash
-nix-env -if ../../nix/pkgs/herb
+nix-env -if .
 ```

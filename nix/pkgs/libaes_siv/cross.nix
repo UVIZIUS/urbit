@@ -1,9 +1,9 @@
-{ env_name, env, ..e }:
+{ env_name, env, deps }:
 
-env.make_derivation {
+env.make_derivation rec {
   name    = "libaes_siv";
+  builder = ./release.sh;
   src     = ../../../pkg/libaes_siv;
-  builder = ./builder.sh;
 
   cross_inputs = [ env.openssl ];
 

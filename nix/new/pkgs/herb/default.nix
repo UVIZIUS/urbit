@@ -6,7 +6,7 @@ stdenvNoCC.mkDerivation {
 
   buildInputs = [ (python.withPackages (py: [ py.requests ])) ];
 
-  phases = [ "installPhase" ];
+  phases = [ "installPhase" "fixupPhase" ];
 
   installPhase = ''
     mkdir -p $out/bin 

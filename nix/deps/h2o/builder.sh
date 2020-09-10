@@ -85,7 +85,6 @@ sources=" \
 CFLAGS=" \
   -O3 \
   -Wall -Wno-unused-value -Wno-unused-function \
-  -D_GNU_SOURCE \
   -I$src/include \
   -I$src/deps/cloexec \
   -I$src/deps/brotli/enc \
@@ -100,12 +99,8 @@ CFLAGS=" \
   -I$src/deps/yoml
 "
 
-for dep in $nativeBuildInputs; do
-   CFLAGS="${CFLAGS-} -I$dep/include"
-done
-
-for s in $sources; do
-  $CC $CFLAGS -c $src/$s -o $(sed 's|/|_|g; s/.c$/.o/' <<< $s)
+for s in $sources
+do cc $CFLAGS -c $src/$s -o $(sed 's|/|_|g; s/.c$/.o/' <<< $s)
 done
 
 mkdir -p $out/{lib,include}

@@ -1,9 +1,9 @@
 { pkgs, ed25519 }:
 
-pkgs.stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation rec {
   name    = "ge-additions";
-  src     = ../../../pkg/ge-additions;
   builder = ./builder.sh;
+  src     = ../../../pkg/ge-additions;
 
-  buildInputs = [ ed25519 ];
+  nativeBuildInputs = [ ed25519 ];
 }

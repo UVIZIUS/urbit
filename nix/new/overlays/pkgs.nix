@@ -13,8 +13,6 @@ final: prev:
 
   h2o = final.callPackage ../pkgs/h2o { };
 
-  ivory-header = final.callPackage ../pkgs/ivory-header { };
-
   libaes-siv = final.callPackage ../pkgs/libaes-siv { };
 
   libscrypt = final.callPackage ../pkgs/libscrypt { };
@@ -25,9 +23,17 @@ final: prev:
 
   herb = final.callPackage ../pkgs/herb { };
 
+  arvo = final.callPackage ../pkgs/arvo { };
+  
   urbit = final.callPackage ../pkgs/urbit { };
 
   urbit-debug = final.callPackage ../pkgs/urbit { debug = true; };
 
   urbit-hs = final.callPackage ../pkgs/urbit-hs { };
+
+  ivory = final.callPackage ../pkgs/pill/ivory { };
+
+  brass = final.callPackage ../pkgs/pill/brass { };
+
+  solid = final.callPackage ../pkgs/pill/solid { };
 } 

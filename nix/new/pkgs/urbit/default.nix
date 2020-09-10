@@ -9,7 +9,7 @@
 , ge-additions
 , gmp
 , h2o
-, ivory-header
+, ivory
 , libaes-siv
 , libscrypt
 , libsigsegv
@@ -27,9 +27,8 @@
 }:
 
 stdenv.mkDerivation rec {
-  pname = exename;
+  pname = "urbit";
   version = builtins.readFile "${src}/version";
-  exename = if debug then "urbit-debug" else "urbit";
   src = lib.cleanSource ../../../../pkg/urbit;
 
   nativeBuildInputs = [ pkgconfig ];
@@ -43,7 +42,7 @@ stdenv.mkDerivation rec {
     ge-additions
     gmp
     h2o
-    ivory-header
+    ivory.header
     libaes-siv
     libscrypt
     libsigsegv
@@ -64,8 +63,8 @@ stdenv.mkDerivation rec {
   
   installPhase = ''
     mkdir -p $out/bin
-    cp ./build/urbit $out/bin/$exename
-    cp ./build/urbit-worker $out/bin/$exename-worker
+    cp ./build/urbit $out/bin/urbit
+    cp ./build/urbit-worker $out/bin/urbit-worker
   '';
 
   CFLAGS =
@@ -82,4 +81,8 @@ stdenv.mkDerivation rec {
   hardeningDisable = lib.optionals debug [ "all" ];
 
   enableParallelBuilding = true;
+
+  meta = {
+    inherit debug;
+  };
 }

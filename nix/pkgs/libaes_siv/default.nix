@@ -1,17 +1,9 @@
 { pkgs }:
 
-pkgs.stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation rec {
   name    = "libaes_siv";
+  builder = ./builder.sh;
   src     = ../../../pkg/libaes_siv;
 
-  buildInputs = [ pkgs.openssl ];
-
-  unpackPhase  = "true";
-  installPhase = ''
-    cp -r $src ./src
-    chmod -R u+w ./src
-    cd ./src
-
-    PREFIX="$out" make install
-  '';
+  nativeBuildInputs = [ pkgs.openssl ];
 }

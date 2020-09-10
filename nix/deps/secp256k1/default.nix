@@ -1,25 +1,25 @@
 { pkgs }:
 
-pkgs.stdenv.mkDerivation {
-  name = "secp256k1";
-  src  = pkgs.sources.secp256k1;
+pkgs.stdenv.mkDerivation rec {
+  name    = "secp256k1-b4e87";
+  builder = ./builder.sh;
 
-  depsBuildBuild = [
-    pkgs.buildPackages.stdenv.cc
-    pkgs.autoconf
-    pkgs.automake
-    pkgs.libtool
-    pkgs.m4
+  CFLAGS = "-fPIC";
+
+  configureFlags = [
+    "--disable-shared"
+    "--enable-module-recovery"
   ];
 
-  depsBuildHost = [
-    pkgs.gmp
-  ];
- 
-  preConfigure = ''
-    ./autogen.sh
-  '';
-   
-  configureFlags = ["--disable-shared" "--enable-module-recovery" ];
-  CFLAGS         = "-fPIC";
+  buildInputs = [ pkgs.gmp ];
+  nativeBuildInputs =
+    with pkgs;
+    [ autoconf automake libtool m4 ];
+
+  src = pkgs.fetchFromGitHub {
+    owner = "bitcoin-core";
+    repo = "secp256k1";
+    rev = "e34ceb333b1c0e6f4115ecbb80c632ac1042fa49";
+    sha256 = "0as78s179hcr3ysk3fw98k5wzabgnwri7vkkc17wg31lyz6ids6c";
+  };
 }

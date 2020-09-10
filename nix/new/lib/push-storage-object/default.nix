@@ -1,4 +1,4 @@
-{ pkgs }:
+{ lib, stdenvNoCC, coreutils, xxd, google-cloud-sdk }:
 
 { src
 , md5
@@ -8,19 +8,19 @@
 , preferLocalBuild ? true
 }:
 
-assert pkgs.lib.asserts.assertMsg (builtins.isString serviceAccountKey)
+assert lib.asserts.assertMsg (builtins.isString serviceAccountKey)
   "`serviceAccountKey` must be the JSON string contents of a service-account key";
 
 let
 
   key = builtins.replaceStrings ["\n"] [""] object;
-  uri = "gs://${bucket}/${pkgs.lib.removePrefix "/" key}";
+  uri = "gs://${bucket}/${lib.removePrefix "/" key}";
 
   sha256 = builtins.hashString "sha256" "${md5} ${uri}";
 
-in pkgs.stdenvNoCC.mkDerivation {
+in stdenvNoCC.mkDerivation {
   name = "storage-object-${md5}";
-  nativeBuildInputs = [ pkgs.coreutils pkgs.xxd pkgs.google-cloud-sdk ];
+  nativeBuildInputs = [ coreutils xxd google-cloud-sdk ];
   phases = [ "installPhase" ];
   installPhase = ''
     set -euo pipefail

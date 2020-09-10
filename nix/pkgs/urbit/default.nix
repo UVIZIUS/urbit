@@ -1,19 +1,7 @@
-{ pkgs
-, debug
-, argon2
-, ed25519
-, ent
-, ge-additions
-, libsigsegv
-, libaes_siv
-, h2o
-, murmur3
-, scrypt
-, secp256k1
-, softfloat3
-, uv
-, ivory-header
-, ca-header
+{
+  pkgs,
+  debug,
+  argon2, ed25519, ent, ge-additions, libaes_siv, h2o, murmur3, scrypt, secp256k1, softfloat3, uv, ivory-header, ca-header
 }:
 
 let
@@ -21,58 +9,53 @@ let
   name =
     if debug then "urbit-debug" else "urbit";
 
-  meta = {
+  meta = rec {
     inherit debug;
     bin   = "${urbit}/bin/${name}";
     flags = if debug then [ "-g" ] else [];
     exe   = ''${meta.bin} ${pkgs.lib.strings.concatStringsSep " " meta.flags}'';
   };
 
-  deps = with pkgs; [
-    binutils
-    curl
-    gmp
-    libsigsegv
-    openssl
-    zlib
-    lmdb
-  ];
+  sigseg =
+    pkgs.libsigsegv.overrideAttrs (oldAttrs: rec {
+      patches = [ ./libsigsegv_fix.patch ];
+    });
 
-  vendor = [
-    argon2
-    softfloat3
-    ed25519
-    ent
-    ge-additions
-    libaes_siv
-    h2o
-    scrypt
-    uv
-    murmur3
-    secp256k1
-    ivory-header
-    ca-header
-  ];
+  deps =
+    with pkgs;
+    [ curl gmp sigseg openssl zlib lmdb ];
 
-  urbit = (pkgs.makeStaticLibraries pkgs.pkgsStatic.stdenv).mkDerivation {
-    inherit meta;
+  vendor =
+    [ argon2 softfloat3 ed25519 ent ge-additions libaes_siv h2o scrypt uv murmur3 secp256k1 ivory-header ca-header ];
 
-    name = "${name}-static";
-
+  urbit = pkgs.stdenv.mkDerivation {
+    inherit name meta;
     exename = name;
-    src = ../../../pkg/urbit;
-    builder = ./builder.sh;
+    src     = ../../../pkg/urbit;
+    nativeBuildInputs = deps ++ vendor;
 
-    propagatedBuildInputs = deps ++ vendor;
+    configurePhase = ''
+      bash ./configure
+    '';
+
+    installPhase = ''
+      make all -j8
+      make test
+
+      mkdir -p $out/bin
+      cp ./build/urbit $out/bin/$exename
+      cp ./build/urbit-worker $out/bin/$exename-worker
+    '';
 
     # See https://github.com/NixOS/nixpkgs/issues/18995
     hardeningDisable = if debug then [ "all" ] else [];
 
-    LDFLAGS          = "-static";
-    CFLAGS           = "--static " + (if debug then "-O0 -g" else "-O3 -g -Werror");
+    CFLAGS           = "-O3 -g -Werror";
     MEMORY_DEBUG     = debug;
     CPU_DEBUG        = debug;
     EVENT_TIME_DEBUG = false;
   };
 
-in urbit
+in
+
+urbit

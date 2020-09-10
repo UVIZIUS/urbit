@@ -1,9 +1,11 @@
-{ crossenv, ivory }:
+{
+  crossenv,
+  ivory ? ../../../bin/ivory.pill
+}:
 
-crossenv.make_derivation {
-  name             = "ivory.h";
-  src              = ivory;
-  builder          = ./builder.sh;
-  preferLocalBuild = true;
-  native_inputs    = [ crossenv.nixpkgs.xxd ];
+crossenv.make_derivation rec {
+  name              = "ivory.h";
+  builder           = ./builder.sh;
+  native_inputs     = with crossenv.nixpkgs; [ xxd ];
+  IVORY             = ivory;
 }
